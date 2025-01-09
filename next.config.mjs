@@ -1,13 +1,11 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === "production";
-const nextConfig = {
-  reactStrictMode: true,
-  images: {
-    unoptimized: true, // Disable default image optimization
-  },
-  assetPrefix: "/ora-checkout/",
-  basePath: "/ora-checkout",
-  output: "export",
-};
+const isLocal = process.env.NODE_ENV !== "development";
+const nextConfig = isLocal
+  ? {
+      basePath: "/ora-checkout",
+      output: "export",
+      reactStrictMode: true,
+    }
+  : {};
 
 export default nextConfig;

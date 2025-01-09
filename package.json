@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://deepakkumar6153.github.io/ora-checkout",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "NODE_ENV=development next dev  --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
