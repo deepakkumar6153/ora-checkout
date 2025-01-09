@@ -5,8 +5,8 @@ const nextConfig = {
   images: {
     unoptimized: true, // Disable default image optimization
   },
-  assetPrefix: isProd ? "/ora-checkout/" : "",
-  basePath: isProd ? "/ora-checkout" : "",
+  assetPrefix: "/ora-checkout/",
+  basePath: "/ora-checkout",
   output: "export",
 };
 
