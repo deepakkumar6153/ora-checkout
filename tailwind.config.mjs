@@ -6,12 +6,17 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+    theme: {
+      extend: {
+        colors: {
+          primary: "#F26B3A", // Swiggy-like orange
+          secondary: "#FFCB47", // Yellow shade for highlights
+          dark: "#282c3f",
+          light: "#f5f5f5",
+          grayText: "#7e808c",
+        },
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar-hide")],
 };
