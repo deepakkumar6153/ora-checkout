@@ -3,8 +3,16 @@
 @tailwind utilities;
 
 :root {
+  --primary: #FC8019;
+  --primary-light: #FFF0E5;
+  --success: #60B246;
+  --success-light: #E9F3E5;
+  --text-primary: #171717;
+  --text-secondary: #686B78;
   --background: #ffffff;
-  --foreground: #171717;
+  --surface: #F8F8F8;
+  --discount: #FF6B6B;
+  --border: #E8E8E8;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,9 +23,61 @@
 }
 
 body {
-  color: var(--foreground);
+  color: var(--text-primary);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@layer components {
+  /* Header Styles */
+  .header {
+    @apply fixed top-0 left-0 right-0 h-14 bg-white z-50 flex items-center px-4 border-b border-[var(--border)];
+  }
+  
+  .back-button {
+    @apply -ml-2 p-2 rounded-full hover:bg-[var(--surface)];
+  }
+
+  /* Product Card Styles */
+  .product-card {
+    @apply relative p-4 border-b border-[var(--border)] bg-white;
+  }
+
+  .discount-tag {
+    @apply absolute top-4 left-4 bg-[var(--discount)] text-white text-xs px-2 py-1 rounded-sm;
+  }
+
+  /* Button Styles */
+  .primary-button {
+    @apply bg-[var(--primary)] text-white font-medium py-3 px-6 rounded-lg w-full hover:opacity-90 transition-opacity;
+  }
+
+  .quantity-button {
+    @apply w-8 h-8 flex items-center justify-center border border-[var(--primary)] text-[var(--primary)] rounded;
+  }
+
+  /* Category Scroll */
+  .category-scroll {
+    @apply flex overflow-x-auto hide-scrollbar gap-4 px-4 py-2 bg-white border-b border-[var(--border)];
+  }
+
+  .category-item {
+    @apply px-4 py-2 rounded-full text-sm whitespace-nowrap;
+  }
+
+  .category-item.active {
+    @apply bg-[var(--primary-light)] text-[var(--primary)];
+  }
+
+  /* Cart Button */
+  .floating-cart {
+    @apply fixed bottom-4 left-4 right-4 bg-[var(--primary)] text-white py-3 px-6 rounded-lg shadow-lg;
+  }
+
+  /* Input Styles */
+  .input-field {
+    @apply w-full border-b border-[var(--border)] py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)];
+  }
 }
 
 /* Hide scrollbar for categories and product scroll */

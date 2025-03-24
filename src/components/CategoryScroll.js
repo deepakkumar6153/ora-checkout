@@ -1,19 +1,34 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
-const categories = ["Quilts", "Bedsheets", "Cushions", "Bathrobes", "Towels"];
+const categories = ["All", "Bedsheets", "Towels", "Quilts", "Table Covers", "Bathrobes", "Cushions"];
 
-const CategoryScroll = () => {
+const CategoryScroll = ({ onCategoryChange }) => {
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const handleCategoryClick = (category) => {
+    setActiveCategory(category);
+    onCategoryChange?.(category);
+  };
+
   return (
-    <div className="flex space-x-3 overflow-x-scroll hide-scrollbar p-4 bg-white">
-      {categories.map((category) => (
-        <button
-          key={category}
-          className="px-4 py-2 text-sm border rounded-full bg-gray-100 hover:bg-gray-200"
-        >
-          {category}
-        </button>
-      ))}
+    <div className="sticky top-14 bg-white z-40 border-b border-gray-100">
+      <div className="flex overflow-x-auto hide-scrollbar px-4 py-3 gap-3">
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => handleCategoryClick(category)}
+            className={`
+              whitespace-nowrap px-3 py-1 rounded-2xl text-[13px] font-medium
+              ${activeCategory === category 
+                ? 'bg-[#fceee3] text-[#FC8019]' 
+                : 'bg-gray-100 text-gray-700'}
+            `}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
