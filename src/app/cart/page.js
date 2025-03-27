@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useOrder } from "@/context/OrderContext";
-import Header from "@/components/Header";
 import Menu from "@/components/Menu";
 import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 
@@ -35,12 +34,9 @@ const CartPage = () => {
   if (cart.length === 0) {
     return (
       <div className="min-h-screen bg-white">
-        <Header showBack title="Cart" />
         <Menu />
-        <div className="pt-14">
-          <div className="text-center py-8">
-            <p className="text-gray-500">Your cart is empty</p>
-          </div>
+        <div className="text-center py-8">
+          <p className="text-gray-500">Your cart is empty</p>
         </div>
       </div>
     );
@@ -48,7 +44,6 @@ const CartPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header showBack title="Cart" />
       <Menu />
       <div className="pt-14 pb-32">
         <div className="max-w-[480px] mx-auto px-4">

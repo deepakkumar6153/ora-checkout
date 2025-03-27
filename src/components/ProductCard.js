@@ -1,12 +1,14 @@
 "use client";
-import React from "react";
+import React, { useState } from 'react';
 import { useOrder } from "../context/OrderContext";
 import { FiMinus, FiPlus } from "react-icons/fi";
+import Image from "next/image";
 
 const ProductCard = ({ product, isHorizontal = false }) => {
   const { cart, addToCart, updateQuantity } = useOrder();
   const itemInCart = cart.find(item => item.id === product.id);
   const quantity = itemInCart?.quantity || 0;
+  const [imageError, setImageError] = useState(false);
 
   const handleAdd = () => {
     console.log("Adding product to cart:", product); // Debug log
@@ -16,20 +18,27 @@ const ProductCard = ({ product, isHorizontal = false }) => {
     });
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   if (isHorizontal) {
     return (
       <div className="relative bg-white rounded-lg overflow-hidden">
         {/* Product Image */}
         <div className="relative w-full aspect-square">
-          {product.image ? (
-            <img 
-              src={product.image} 
-              alt={product.name}
-              className="w-full h-full object-cover"
+          {!imageError ? (
+            <Image
+              src={product.image}
+              alt="ora living centered text"
+              fill
+              className="object-cover"
+              onError={handleImageError}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <span className="text-sm text-gray-400">Image</span>
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <span className="text-gray-400 text-sm">Image not available</span>
             </div>
           )}
         </div>
@@ -90,15 +99,18 @@ const ProductCard = ({ product, isHorizontal = false }) => {
       <div className="flex flex-col items-end">
         {/* Product Image */}
         <div className="relative">
-          {product.image ? (
-            <img 
-              src={product.image} 
-              alt={product.name} 
+          {!imageError ? (
+            <Image
+              src={product.image}
+              alt="ora living centered text"
+              width={200}
+              height={200}
               className="w-[100px] h-[100px] object-cover rounded-lg"
+              onError={handleImageError}
             />
           ) : (
-            <div className="w-[100px] h-[100px] bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-sm text-gray-400">Image</span>
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <span className="text-gray-400 text-sm">Image not available</span>
             </div>
           )}
         </div>

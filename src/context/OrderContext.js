@@ -1,25 +1,70 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { writeOrderToSheet } from "@/services/googleSheets";
+import { readProductsFromSheet, submitOrderToSheet } from "@/services/sheetsService";
 
 const OrderContext = createContext();
 
 const STORAGE_KEY = "ora_cart";
 
 export const OrderProvider = ({ children }) => {
+  const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [categories, setCategories] = useState(['all']); // Initialize with 'all'
   const [customer, setCustomer] = useState({ name: "", phone: "", notes: "" });
   const [location, setLocation] = useState("");
   const [salesId, setSalesId] = useState("");
 
-  // Load cart and customer from localStorage on first load
+  // Function to extract unique categories from products
+  const extractCategories = (products) => {
+    const uniqueCategories = new Set(['all']);
+    products.forEach(product => {
+      if (product.category) {
+        uniqueCategories.add(product.category);
+      }
+    });
+    return Array.from(uniqueCategories);
+  };
+
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const fetchedProducts = await readProductsFromSheet();
+        console.log('Fetched products with unique keys:', fetchedProducts);
+        setProducts(fetchedProducts || []);
+        // Update categories based on fetched products
+        setCategories(extractCategories(fetchedProducts));
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setError(error.message);
+        setProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Load cart from localStorage on first load
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(STORAGE_KEY);
       const savedCustomer = localStorage.getItem("ora_customer");
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
-        setCart(parsedCart);
+        // Ensure cart items have unique keys
+        const cartWithUniqueKeys = parsedCart.map(item => ({
+          ...item,
+          id: item.uniqueKey || item.id // Use uniqueKey if available, fallback to id
+        }));
+        setCart(cartWithUniqueKeys);
       }
       if (savedCustomer) {
         const parsedCustomer = JSON.parse(savedCustomer);
@@ -81,43 +126,42 @@ export const OrderProvider = ({ children }) => {
 
   const prepareOrderData = () => {
     if (!cart.length) {
-      return [];
+      throw new Error('Cart is empty');
     }
 
     // Calculate total negotiated amount
     const totalNegotiatedAmount = cart.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
 
-    // Calculate final prices for each product
-    const cartWithFinalPrices = calculateFinalPrices(cart, totalNegotiatedAmount);
-
-    // Prepare entries for Google Sheets
-    return cartWithFinalPrices.map(item => ({
-      location,
-      salesId,
-      productName: item.name,
-      productSalePrice: item.salePrice,
-      productMinPrice: item.minSalePrice,
-      productFinalPrice: item.finalPrice,
+    // Prepare entries with camelCase keys
+    return cart.map(item => ({
+      location: location || "",
+      salesId: salesId || "",
+      productName: item.name || "",
+      quantity: item.quantity || 0,
+      productSalePrice: item.salePrice || 0,
+      productMinPrice: item.minSalePrice || 0,
+      productFinalPrice: item.finalPrice || 0,
+      totalCartPrice: totalNegotiatedAmount || 0,
       customerName: customer.name || "",
       customerPhone: customer.phone || "",
-      notes: customer.notes || "",
-      quantity: item.quantity,
-      totalCartPrice: totalNegotiatedAmount,
-      timestamp: new Date().toISOString()
+      notes: customer.notes || ""
     }));
   };
 
   const submitOrder = async () => {
     try {
       const orderData = prepareOrderData();
-      await writeOrderToSheet(orderData);
+      const success = await submitOrderToSheet(orderData);
       
       // Reset order after successful submission
-      resetOrder();
-      return true;
+      if (success) {
+        resetOrder();
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error('Error submitting order:', error);
-      return false;
+      throw error;
     }
   };
 
@@ -128,6 +172,7 @@ export const OrderProvider = ({ children }) => {
   };
 
   const addToCart = (product) => {
+    console.log('Adding product to cart:', product);
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
       if (existingItem) {
@@ -140,7 +185,8 @@ export const OrderProvider = ({ children }) => {
       return [...prevCart, { 
         ...product, 
         quantity: 1,
-        finalPrice: product.salePrice // Initialize finalPrice with salePrice
+        finalPrice: product.salePrice, // Initialize finalPrice with salePrice
+        uniqueKey: product.uniqueKey || product.id // Preserve uniqueKey
       }];
     });
   };
@@ -179,14 +225,16 @@ export const OrderProvider = ({ children }) => {
   };
 
   const resetOrder = () => {
+    // Clear cart
     setCart([]);
+    // Clear customer details
     setCustomer({ name: "", phone: "", notes: "" });
-    setLocation("");
-    setSalesId("");
+    // Reset search and category
+    setSearchQuery("");
+    // Clear localStorage
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem("ora_customer");
-    localStorage.removeItem("salesLocation");
-    localStorage.removeItem("salesId");
+    // Keep location and salesId as they might be needed for next order
   };
 
   const updateCustomer = (newCustomer) => {
@@ -203,7 +251,13 @@ export const OrderProvider = ({ children }) => {
   };
 
   const value = {
+    products,
     cart,
+    selectedCategory,
+    searchQuery,
+    isLoading,
+    error,
+    categories,
     customer,
     setCustomer,
     location,
@@ -218,7 +272,10 @@ export const OrderProvider = ({ children }) => {
     resetOrder,
     updateCustomer,
     updateNegotiatedAmount,
-    prepareOrderData
+    prepareOrderData,
+    setSelectedCategory,
+    setSearchQuery,
+    submitOrder
   };
 
   return (

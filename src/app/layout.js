@@ -3,17 +3,28 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { OrderProvider } from "@/context/OrderContext";
 import { MenuProvider } from "@/context/MenuContext";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ["latin"] });
 
-
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+  const showBackButton = pathname.startsWith('/cart') || pathname.startsWith('/details');
+
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} bg-white`}>
         <OrderProvider>
           <MenuProvider>
-            {children}
+            <div className="min-h-screen flex flex-col bg-white">
+              <Header showBackButton={showBackButton} />
+              <main className="flex-1 pt-14 px-4 pb-4 bg-white">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </MenuProvider>
         </OrderProvider>
       </body>

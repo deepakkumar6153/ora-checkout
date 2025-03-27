@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOrder } from "@/context/OrderContext";
 import { submitOrderToSheet } from "@/services/sheetsService";
-import Header from "@/components/Header";
 import Menu from "@/components/Menu";
 
 const DetailsPage = () => {
@@ -40,7 +39,6 @@ const DetailsPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header showBack title="Customer Details" />
       <Menu />
       <div className="pt-14 pb-32">
         <div className="max-w-[480px] mx-auto px-4">
