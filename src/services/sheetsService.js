@@ -1,4 +1,4 @@
-// Google Apps Script configuration
+import { NEXT_PUBLIC_GOOGLE_SCRIPT_URL } from "@/constants/config";// Google Apps Script configuration
 const SCRIPT_URL = NEXT_PUBLIC_GOOGLE_SCRIPT_URL;
 
 // Import column mappings
@@ -9,7 +9,7 @@ import {
   validateSheetStructure,
   SHEETS,
 } from "@/constants/columnMappings";
-import { NEXT_PUBLIC_GOOGLE_SCRIPT_URL } from "@/constants/config";
+
 
 // Function to read products from Google Sheet
 export const readProductsFromSheet = async () => {

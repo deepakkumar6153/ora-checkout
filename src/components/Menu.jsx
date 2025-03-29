@@ -5,6 +5,7 @@ import { useMenu } from "@/context/MenuContext";
 import { FiX, FiRefreshCcw, FiArrowLeft, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { ORA_LIVING_PAYMENT_QR_CODE, ORA_LIVING_INSTAGRAM_QR_CODE } from '@/constants/config';
 
 const Menu = () => {
   const { isOpen, closeMenu } = useMenu();
@@ -22,6 +23,17 @@ const Menu = () => {
     resetOrder();
     router.push("/");
     closeMenu();
+  };
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    // If it's already a complete URL, return as is
+    if (url.startsWith('https://')) return url;
+    // If it's a Google Drive ID, construct the proper URL
+    if (url.includes('drive.google.com')) {
+      const fileId = url.split('id=')[1];
+      return `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+    }
+    return url;
   };
 
   return (
@@ -41,13 +53,7 @@ const Menu = () => {
         </div>
         
         <div className="absolute left-1/2 transform -translate-x-1/2">
-          <Image 
-            src="/images/logo.png" 
-            alt="Ora Living" 
-            width={100} 
-            height={32} 
-            className="h-8 object-contain"
-          />
+          ORA LIVING
         </div>
 
         <button 
@@ -125,31 +131,39 @@ const Menu = () => {
           </div>
           <div className="aspect-square w-full bg-gray-100 rounded-lg flex items-center justify-center">
             {activeTab === 'payment' ? (
-              <Image
-                src="/images/payment-qr.png"
-                alt="Payment QR Code"
-                width={200}
-                height={200}
-                className="rounded-lg"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={ORA_LIVING_PAYMENT_QR_CODE}
+                  alt="Ora Living Payment QR Code - Scan to make payment"
+                  fill
+                  className="object-contain rounded-lg"
+                  sizes="100vw"
+                  loading="lazy"
+                  quality={75}
+                />
+              </div>
             ) : (
-              <Image
-                src="/images/insta-qr.png"
-                alt="Instagram QR Code"
-                width={200}
-                height={200}
-                className="rounded-lg"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={ORA_LIVING_INSTAGRAM_QR_CODE}
+                  alt="Ora Living Instagram QR Code - Scan to follow us"
+                  fill
+                  className="object-contain rounded-lg"
+                  sizes="100vw"
+                  loading="lazy"
+                  quality={75}
+                />
+              </div>
             )}
           </div>
         </div>
 
         <button
           onClick={handleReset}
-          className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-lg"
+          className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#FC8019] text-white rounded-lg font-medium hover:bg-[#e67316]"
         >
           <FiRefreshCcw size={18} />
-          <span className="font-medium">Reset Order</span>
+          <span>Reset Order</span>
         </button>
       </div>
     </div>

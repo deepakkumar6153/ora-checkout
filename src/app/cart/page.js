@@ -4,16 +4,63 @@ import { useRouter } from "next/navigation";
 import { useOrder } from "@/context/OrderContext";
 import Menu from "@/components/Menu";
 import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
+import Image from "next/image";
+import { CATEGORY_COLORS } from "@/constants/colors";
+
+const PRICE_THRESHOLD_PERCENTAGE = 20;
+
+// Default color for fallback
+const DEFAULT_CATEGORY_COLOR = {
+  bg: '#F7F7F7',
+  text: '#666666',
+  border: '#E5E7EB'
+};
 
 const CartPage = () => {
   const router = useRouter();
-  const { cart, updateQuantity, removeFromCart, updateItemFinalPrice, updateNegotiatedAmount, location, salesId } = useOrder();
+  const { cart, updateQuantity, removeFromCart, updateItemFinalPrice, updateNegotiatedAmount, location, salesId, categories } = useOrder();
   const [negotiatedAmount, setNegotiatedAmount] = useState("");
+
+  // Function to get color for a category
+  const getCategoryColor = (category) => {
+    if (!category || !categories.includes(category)) {
+      return DEFAULT_CATEGORY_COLOR;
+    }
+    const index = categories.indexOf(category) % CATEGORY_COLORS.length;
+    return CATEGORY_COLORS[index];
+  };
+
+  // Function to ensure image URL is properly formatted
+  const getImageUrl = (url) => {
+    if (!url) return '';
+    // If it's already a complete URL, return as is
+    if (url.startsWith('https://')) return url;
+    // If it's a Google Drive ID, construct the proper URL
+    if (url.includes('drive.google.com')) {
+      const fileId = url.split('id=')[1];
+      return `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
+    }
+    return url;
+  };
 
   // Calculate totals
   const totalSaleAmount = cart.reduce((sum, item) => sum + (item.salePrice * item.quantity), 0);
   const totalMinimumAmount = cart.reduce((sum, item) => sum + (item.minSalePrice * item.quantity), 0);
   const totalFinalAmount = cart.reduce((sum, item) => sum + (item.finalPrice * item.quantity), 0);
+
+  // Calculate price difference
+  const priceDifference = totalFinalAmount - totalSaleAmount;
+  
+  // Determine if price is too high or low
+  const getPriceValidationMessage = () => {
+    const priceDiffPercentage = (priceDifference / totalSaleAmount) * 100;
+    if (priceDiffPercentage > PRICE_THRESHOLD_PERCENTAGE) {
+      return `Paid price is ₹${Math.abs(priceDifference).toFixed(2)} higher than original price`;
+    } else if (priceDiffPercentage < -PRICE_THRESHOLD_PERCENTAGE) {
+      return `Paid price is ₹${Math.abs(priceDifference).toFixed(2)} lower than original price`;
+    }
+    return null;
+  };
 
   // Set initial negotiated amount to total sale amount
   useEffect(() => {
@@ -49,45 +96,67 @@ const CartPage = () => {
         <div className="max-w-[480px] mx-auto px-4">
           {/* Cart Items */}
           <div className="space-y-4">
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-lg"
-              >
-                <div className="flex-1">
-                  <h3 className="text-[15px] font-medium text-gray-800">
-                    {item.name}
-                  </h3>
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="text-[15px] font-medium">₹{item.salePrice.toFixed(2)}</span>
+            {cart.map((item) => {
+              const categoryColor = getCategoryColor(item.category);
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-lg"
+                  style={{ backgroundColor: `${categoryColor.bg}20` }}
+                >
+                  {/* Product Image */}
+                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={getImageUrl(item.image)}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                    />
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className="text-[15px] font-medium text-gray-800">
+                      {item.name}
+                    </h3>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="text-[15px] font-medium" style={{ color: categoryColor.text }}>
+                        ₹{item.salePrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-10 h-10 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md hover:bg-gray-50 active:scale-95 transition-all"
+                        aria-label="Decrease quantity"
+                      >
+                        <FiMinus size={18} />
+                      </button>
+                      <span className="text-[15px] font-medium min-w-[24px] text-center">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="w-10 h-10 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md hover:bg-gray-50 active:scale-95 transition-all"
+                        aria-label="Increase quantity"
+                      >
+                        <FiPlus size={18} />
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="ml-4 p-2 hover:bg-gray-100 rounded-full transition-all active:scale-95"
+                      aria-label="Remove item"
+                    >
+                      <FiTrash2 size={16} className="text-gray-400" />
+                    </button>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    className="w-7 h-7 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md"
-                  >
-                    <FiMinus size={14} />
-                  </button>
-                  <span className="text-[13px] font-medium min-w-[20px] text-center">
-                    {item.quantity}
-                  </span>
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="w-7 h-7 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md"
-                  >
-                    <FiPlus size={14} />
-                  </button>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="p-1 hover:bg-gray-100 rounded-full ml-2"
-                  >
-                    <FiTrash2 size={16} className="text-gray-400" />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Bill Details */}
@@ -104,9 +173,6 @@ const CartPage = () => {
                 <span>₹{totalMinimumAmount.toFixed(2)}</span>
               </div>
               <div className="pt-2">
-                <label className="block text-[13px] text-gray-500 mb-2">
-                  Negotiated Amount
-                </label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -115,8 +181,19 @@ const CartPage = () => {
                   className="w-full p-3 text-[15px] border border-gray-200 rounded-lg focus:outline-none focus:border-[#FC8019]"
                 />
                 <p className="mt-1 text-[13px] text-gray-500">
-                  Enter the final negotiated amount
+                  Enter the final amount
                 </p>
+                {getPriceValidationMessage() && (
+                  <p className="text-[15px] text-red-500 mt-2">
+                    {getPriceValidationMessage().split('₹').map((part, index) => (
+                      index === 1 ? (
+                        <span key={index} className="font-bold">₹{part}</span>
+                      ) : (
+                        part
+                      )
+                    ))}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -125,7 +202,7 @@ const CartPage = () => {
           <div className="fixed bottom-4 right-4 left-4">
             <button
               onClick={() => router.push("/details")}
-              className="w-full bg-[#FC8019] text-white py-3 rounded-lg font-medium shadow-lg"
+              className="w-full bg-[#FC8019] text-white py-3 rounded-lg font-medium shadow-lg hover:bg-[#e67316] active:scale-95 transition-all"
             >
               Proceed to Checkout
             </button>

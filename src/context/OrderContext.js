@@ -108,20 +108,29 @@ export const OrderProvider = ({ children }) => {
   }, [location, salesId]);
 
   const calculateFinalPrices = (cart, negotiatedAmount) => {
-    // Calculate total min price for the cart
-    const totalMinPrice = cart.reduce((sum, item) => sum + (item.minSalePrice * item.quantity), 0);
+    // Calculate total sale price for the cart
+    const totalSalePrice = cart.reduce((sum, item) => sum + (item.salePrice * item.quantity), 0);
     
-    // Calculate difference between negotiated amount and total min price
-    const difference = negotiatedAmount - totalMinPrice;
+    // Calculate deficit (difference between negotiated amount and total sale price)
+    const deficit = totalSalePrice - negotiatedAmount;
     
-    // Calculate difference per product (evenly distributed)
-    const differencePerProduct = difference / cart.length;
-    
-    // Update final prices for each product
-    return cart.map(item => ({
-      ...item,
-      finalPrice: item.minSalePrice + differencePerProduct
-    }));
+    // Calculate final prices for each product
+    return cart.map(item => {
+      // Calculate this product's proportion of total sale price
+      const productTotalSalePrice = item.salePrice * item.quantity;
+      const proportion = productTotalSalePrice / totalSalePrice;
+      
+      // Calculate this product's share of the deficit
+      const deficitShare = deficit * proportion;
+      
+      // Calculate final price by subtracting the deficit share
+      const finalPrice = item.salePrice - (deficitShare / item.quantity);
+      
+      return {
+        ...item,
+        finalPrice: Math.round(finalPrice * 100) / 100 // Round to 2 decimal places
+      };
+    });
   };
 
   const prepareOrderData = () => {

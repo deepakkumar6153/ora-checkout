@@ -11,9 +11,6 @@ export const APP_PROPERTIES = {
     name: '',
     category: '',
     description: '',
-    size: '',
-    material: '',
-    price: 0,
     salePrice: 0,
     minSalePrice: 0,
     image: ''
@@ -36,17 +33,12 @@ export const APP_PROPERTIES = {
 // Define how sheet columns map to app properties
 export const SHEET_TO_APP_MAPPING = {
   [SHEETS.PRODUCTS]: {
-    id: 'id',
     name: 'name',
     category: 'category',
     description: 'description',
-    size: 'size',
-    material: 'material',
-    // Map description to price since that's what we're getting from the sheet
-    price: 'description',
-    salePrice: 'description',
-    minSalePrice: 'size',
-    image: 'material'
+    salePrice: 'salePrice',
+    minSalePrice: 'minSalePrice',
+    image: 'image'
   },
   [SHEETS.ORDERS]: {
     location: 'location',
@@ -66,26 +58,25 @@ export const SHEET_TO_APP_MAPPING = {
 // Define how app properties map to sheet columns
 export const APP_TO_SHEET_MAPPING = {
   [SHEETS.PRODUCTS]: {
-    id: 'id',
     name: 'name',
     category: 'category',
     description: 'description',
-    size: 'size',
-    material: 'material'
+    salePrice: 'salePrice',
+    minSalePrice: 'minSalePrice',
+    image: 'image'
   },
   [SHEETS.ORDERS]: {
-    timestamp: 'Date',
-    location: 'Location',
-    salesId: 'Sales ID',
-    productName: 'Product Name',
-    quantity: 'Quantity',
-    productSalePrice: 'Sale Price',
-    productMinPrice: 'Min Sale Price',
-    productFinalPrice: 'Final Sale Price',
-    totalCartPrice: 'Cart Total',
-    customerName: 'Customer Name',
-    customerPhone: 'Customer Phone',
-    notes: 'Notes'
+    location: 'location',
+    salesId: 'salesId',
+    productName: 'productName',
+    quantity: 'quantity',
+    productSalePrice: 'productSalePrice',
+    productMinPrice: 'productMinPrice',
+    productFinalPrice: 'productFinalPrice',
+    totalCartPrice: 'totalCartPrice',
+    customerName: 'customerName',
+    customerPhone: 'customerPhone',
+    notes: 'notes'
   }
 };
 
