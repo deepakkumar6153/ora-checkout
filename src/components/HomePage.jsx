@@ -9,15 +9,15 @@ import { CATEGORY_COLORS } from "@/constants/colors";
 
 const HomePage = () => {
   const router = useRouter();
-  const { 
-    cart, 
-    addToCart, 
-    updateQuantity, 
-    products, 
-    isLoading, 
-    selectedCategory, 
+  const {
+    cart,
+    addToCart,
+    updateQuantity,
+    products,
+    isLoading,
+    selectedCategory,
     setSelectedCategory,
-    categories 
+    categories,
   } = useOrder();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -28,10 +28,10 @@ const HomePage = () => {
 
   // Memoize filtered products
   const filteredProducts = useMemo(() => {
-    return products.filter(product => {
+    return products.filter((product) => {
       if (!product) return false;
-      const name = product.name?.toLowerCase() || '';
-      const category = product.category?.toLowerCase() || '';
+      const name = product.name?.toLowerCase() || "";
+      const category = product.category?.toLowerCase() || "";
       const query = searchQuery.toLowerCase();
       return name.includes(query) || category.includes(query);
     });
@@ -51,7 +51,7 @@ const HomePage = () => {
 
   // Memoize filtered categories
   const filteredCategories = useMemo(() => {
-    return selectedCategory === 'all' 
+    return selectedCategory === "all"
       ? Object.keys(groupedProducts)
       : [selectedCategory];
   }, [selectedCategory, groupedProducts]);
@@ -59,7 +59,10 @@ const HomePage = () => {
   // Memoize cart totals
   const { totalItems, totalAmount } = useMemo(() => {
     const items = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    const amount = cart.reduce((sum, item) => sum + ((item.finalPrice || 0) * (item.quantity || 0)), 0);
+    const amount = cart.reduce(
+      (sum, item) => sum + (item.finalPrice || 0) * (item.quantity || 0),
+      0
+    );
     return { totalItems: items, totalAmount: amount };
   }, [cart]);
 
@@ -93,10 +96,13 @@ const HomePage = () => {
           {/* Search Bar */}
           <div className="py-3 px-4">
             <div className="relative glass-light rounded-lg">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <FiSearch
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <input
                 type="text"
-                placeholder="Search for 'Power Bank'"
+                placeholder="Enter product name"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-10 py-2.5 bg-transparent rounded-lg text-[15px] focus:outline-none focus:ring-2 focus:ring-[#FC8019]/20"
@@ -116,18 +122,18 @@ const HomePage = () => {
           <div className="px-4 pb-3">
             <div className="flex gap-2 overflow-x-auto pb-2">
               <button
-                onClick={() => setSelectedCategory('all')}
+                onClick={() => setSelectedCategory("all")}
                 className={`px-4 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-all active:scale-95 ${
-                  selectedCategory === 'all'
-                    ? 'bg-[#FC8019] text-white'
-                    : 'glass-light text-gray-600 hover:bg-white/20'
+                  selectedCategory === "all"
+                    ? "bg-[#FC8019] text-white"
+                    : "glass-light text-gray-600 hover:bg-white/20"
                 }`}
               >
                 All
               </button>
               {categories
-                .filter(category => category !== 'all')
-                .map(category => {
+                .filter((category) => category !== "all")
+                .map((category) => {
                   const categoryColor = getCategoryColor(category);
                   return (
                     <button
@@ -135,9 +141,19 @@ const HomePage = () => {
                       onClick={() => setSelectedCategory(category)}
                       className={`px-4 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-all active:scale-95`}
                       style={{
-                        backgroundColor: selectedCategory === category ? categoryColor.bg : 'rgba(255, 255, 255, 0.1)',
-                        color: selectedCategory === category ? categoryColor.text : '#4b5563',
-                        border: `2px solid ${selectedCategory === category ? categoryColor.border : 'transparent'}`
+                        backgroundColor:
+                          selectedCategory === category
+                            ? categoryColor.bg
+                            : "rgba(255, 255, 255, 0.1)",
+                        color:
+                          selectedCategory === category
+                            ? categoryColor.text
+                            : "#4b5563",
+                        border: `2px solid ${
+                          selectedCategory === category
+                            ? categoryColor.border
+                            : "transparent"
+                        }`,
                       }}
                     >
                       {category}
@@ -151,18 +167,18 @@ const HomePage = () => {
         {/* Scrollable content */}
         <div className="absolute inset-0 overflow-y-auto pt-[120px]">
           {/* Product Categories */}
-          {filteredCategories.map(category => {
+          {filteredCategories.map((category) => {
             const categoryColor = getCategoryColor(category);
             return (
               <div key={category} className="mb-8">
                 {/* Category Section with Background */}
-                <div 
+                <div
                   className="rounded-lg glass"
                   style={{ backgroundColor: `${categoryColor.bg}40` }}
                 >
                   {/* Category Header */}
                   <div className="px-4 pt-4">
-                    <h2 
+                    <h2
                       className="text-[15px] font-medium"
                       style={{ color: categoryColor.text }}
                     >
@@ -172,7 +188,7 @@ const HomePage = () => {
 
                   {/* Product Grid */}
                   <div className="flex gap-4 overflow-x-auto px-4 pb-4">
-                    {groupedProducts[category]?.map(product => (
+                    {groupedProducts[category]?.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}
@@ -193,11 +209,13 @@ const HomePage = () => {
         <div className="fixed bottom-0 left-0 right-0 glass border-t border-[var(--border)] p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[13px] text-gray-600">{totalItems} items</div>
+              <div className="text-[13px] text-gray-600">
+                {totalItems} items
+              </div>
               <div className="text-[15px] font-medium">₹{totalAmount}</div>
             </div>
             <button
-              onClick={() => router.push('/cart')}
+              onClick={() => router.push("/cart")}
               className="px-6 py-2 bg-[#FC8019] text-white rounded-lg text-[13px] font-medium transition-all active:scale-95"
             >
               View Cart
