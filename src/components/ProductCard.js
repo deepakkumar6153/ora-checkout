@@ -45,9 +45,9 @@ const ProductCard = ({ product }) => {
   const categoryColor = getCategoryColor(product.category);
 
   return (
-    <div className="w-[270px] flex-shrink-0">
+    <div className="w-[200px] flex-shrink-0">
       {/* Image Container */}
-      <div className="relative h-[280px] rounded-lg overflow-hidden">
+      <div className="relative h-[200px] rounded-lg overflow-hidden">
         {!imageError && product.image ? (
           <Image
             src={getImageUrl(product.image)}
@@ -55,7 +55,7 @@ const ProductCard = ({ product }) => {
             fill
             className="object-cover"
             onError={handleImageError}
-            sizes="270px"
+            sizes="200px"
             quality={75}
             priority
           />
@@ -65,17 +65,18 @@ const ProductCard = ({ product }) => {
           </div>
         )}
         
-        {/* Product name and price - inside image */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="flex items-center gap-2">
-            <span className="text-[22px] font-bold text-white">₹{product.salePrice}</span>
-            <span className="text-[22px] font-bold text-white">•</span>
-            <h3 className="text-[22px] font-bold text-white line-clamp-1">{product.name}</h3>
-          </div>
+        {/* Price inside image */}
+        <div className="absolute bottom-3 left-3">
+          <span className="text-[11px] font-bold text-white">₹{product.salePrice}</span>
         </div>
       </div>
 
-      {/* Button section outside image */}
+      {/* Product name - below image */}
+      <div className="mt-3 px-1">
+        <h3 className="text-[16px] font-bold text-gray-900 line-clamp-1">{product.name}</h3>
+      </div>
+
+      {/* Button section */}
       <div className="mt-4">
         {quantity === 0 ? (
           <button 
