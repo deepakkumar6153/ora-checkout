@@ -81,7 +81,7 @@ const ProductCard = ({ product }) => {
         {quantity === 0 ? (
           <button 
             onClick={handleAdd}
-            className="w-full h-[36px] text-[13px] font-medium rounded transition-all active:scale-95"
+            className="w-full h-[44px] text-[13px] font-medium rounded transition-all active:scale-95"
             style={{
               backgroundColor: categoryColor.bg,
               color: categoryColor.text,
@@ -91,7 +91,7 @@ const ProductCard = ({ product }) => {
             ADD
           </button>
         ) : (
-          <div className="flex items-center justify-between rounded h-[36px]" style={{ backgroundColor: categoryColor.bg, border: `2px solid ${categoryColor.border}` }}>
+          <div className="flex items-center justify-between rounded h-[44px]" style={{ backgroundColor: categoryColor.bg, border: `2px solid ${categoryColor.border}` }}>
             <button 
               onClick={() => updateQuantity(product.id, quantity - 1)}
               className="w-10 flex items-center justify-center hover:bg-white/20 transition-all active:scale-95 rounded-l"

@@ -1,35 +1,38 @@
 "use client";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { OrderProvider } from "@/context/OrderContext";
-import { MenuProvider } from "@/context/MenuContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { usePathname } from 'next/navigation';
+import './globals.css'
+import { Inter } from 'next/font/google'
+import { OrderProvider } from '@/context/OrderContext'
+import { MenuProvider } from '@/context/MenuContext'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import { usePathname } from 'next/navigation'
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
-  const showBackButton = pathname.startsWith('/cart') || pathname.startsWith('/details');
+  const showBackButton = pathname !== '/';
+  const showFooter = pathname !== '/';
 
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+        <title>ORA LIVING</title>
+      </head>
       <body className={`${inter.className} bg-white`}>
         <OrderProvider>
           <MenuProvider>
-            <div className="min-h-screen flex flex-col bg-white">
-              <Header showBackButton={showBackButton} />
-              <main className="flex-1 pt-14 px-4 pb-4 bg-white">
-                {children}
-              </main>
-              <Footer />
-            </div>
+            <Header showBackButton={showBackButton} />
+            <main className="min-h-screen pb-4 bg-white">
+              {children}
+            </main>
+            {showFooter && <Footer />}
           </MenuProvider>
         </OrderProvider>
       </body>
     </html>
-  );
+  )
 }
 
 // import { usePathname, useRouter } from "next/navigation";

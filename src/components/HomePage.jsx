@@ -2,13 +2,15 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useOrder } from "@/context/OrderContext";
-import { FiSearch, FiX } from "react-icons/fi";
+import { useMenu } from "@/context/MenuContext";
+import { FiSearch, FiX, FiShoppingCart } from "react-icons/fi";
 import ProductCard from "./ProductCard";
 import Menu from "./Menu";
 import { CATEGORY_COLORS } from "@/constants/colors";
 
 const HomePage = () => {
   const router = useRouter();
+  const { isOpen } = useMenu();
   const {
     cart,
     addToCart,
@@ -56,14 +58,9 @@ const HomePage = () => {
       : [selectedCategory];
   }, [selectedCategory, groupedProducts]);
 
-  // Memoize cart totals
-  const { totalItems, totalAmount } = useMemo(() => {
-    const items = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    const amount = cart.reduce(
-      (sum, item) => sum + (item.finalPrice || 0) * (item.quantity || 0),
-      0
-    );
-    return { totalItems: items, totalAmount: amount };
+  // Calculate total items in cart
+  const totalItems = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
   }, [cart]);
 
   // Function to get color for a category
@@ -72,8 +69,14 @@ const HomePage = () => {
     return CATEGORY_COLORS[index];
   };
 
+  // Handle clear search
   const handleClearSearch = () => {
     setSearchQuery("");
+  };
+
+  // Navigate to cart
+  const handleViewCart = () => {
+    router.push("/cart");
   };
 
   if (isLoading) {
@@ -102,7 +105,7 @@ const HomePage = () => {
               />
               <input
                 type="text"
-                placeholder="Enter product name"
+                placeholder="Search product name"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-10 py-2.5 bg-transparent rounded-lg text-[15px] focus:outline-none focus:ring-2 focus:ring-[#FC8019]/20"
@@ -110,7 +113,8 @@ const HomePage = () => {
               {searchQuery && (
                 <button
                   onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-11 h-11 text-gray-400 hover:text-gray-600 flex items-center justify-center"
+                  aria-label="Clear search"
                 >
                   <FiX size={18} />
                 </button>
@@ -119,7 +123,7 @@ const HomePage = () => {
           </div>
 
           {/* Category Filter */}
-          <div className="px-4 pb-3">
+          <div className="px-4 pb-3 hidden">
             <div className="flex gap-2 overflow-x-auto pb-2">
               <button
                 onClick={() => setSelectedCategory("all")}
@@ -194,6 +198,7 @@ const HomePage = () => {
                         product={product}
                         onAdd={addToCart}
                         onUpdateQuantity={updateQuantity}
+                        cartItem={cart.find((item) => item.id === product.id)}
                       />
                     ))}
                   </div>
@@ -204,24 +209,22 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Cart Summary */}
-      {totalItems > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 glass border-t border-[var(--border)] p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-[13px] text-gray-600">
-                {totalItems} items
-              </div>
-              <div className="text-[15px] font-medium">₹{totalAmount}</div>
-            </div>
-            <button
-              onClick={() => router.push("/cart")}
-              className="px-6 py-2 bg-[#FC8019] text-white rounded-lg text-[13px] font-medium transition-all active:scale-95"
-            >
-              View Cart
-            </button>
+      {/* Floating Cart Button */}
+      {totalItems > 0 && !isOpen && (
+        <button
+          onClick={handleViewCart}
+          className="fixed bottom-10 right-6 w-16 h-16 bg-[#FC8019] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#e67316] active:scale-95 transition-all z-40 relative overflow-hidden"
+          style={{ position: 'fixed', right: '1.5rem', bottom: '8.5rem' }}
+          aria-label="View cart"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine"></div>
+          <div className="relative flex items-center justify-center">
+            <FiShoppingCart size={28} className="font-light" />
+            <span className="absolute -top-2 -right-2 bg-white text-[#FC8019] text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center">
+              {totalItems}
+            </span>
           </div>
-        </div>
+        </button>
       )}
     </div>
   );

@@ -20,6 +20,7 @@ const CartPage = () => {
   const router = useRouter();
   const { cart, updateQuantity, removeFromCart, updateItemFinalPrice, updateNegotiatedAmount, location, salesId, categories } = useOrder();
   const [negotiatedAmount, setNegotiatedAmount] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Function to get color for a category
   const getCategoryColor = (category) => {
@@ -127,10 +128,10 @@ const CartPage = () => {
                   </div>
 
                   <div className="flex items-center">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-10 h-10 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md hover:bg-gray-50 active:scale-95 transition-all"
+                        className="w-11 h-11 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md hover:bg-gray-50 active:scale-95 transition-all"
                         aria-label="Decrease quantity"
                       >
                         <FiMinus size={18} />
@@ -140,7 +141,7 @@ const CartPage = () => {
                       </span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-10 h-10 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md hover:bg-gray-50 active:scale-95 transition-all"
+                        className="w-11 h-11 flex items-center justify-center text-[#FC8019] border border-gray-200 rounded-md hover:bg-gray-50 active:scale-95 transition-all"
                         aria-label="Increase quantity"
                       >
                         <FiPlus size={18} />
@@ -148,7 +149,7 @@ const CartPage = () => {
                     </div>
                     <button
                       onClick={() => removeFromCart(item.id)}
-                      className="ml-4 p-2 hover:bg-gray-100 rounded-full transition-all active:scale-95"
+                      className="ml-4 w-11 h-11 p-2 hover:bg-gray-100 rounded-full transition-all active:scale-95"
                       aria-label="Remove item"
                     >
                       <FiTrash2 size={16} className="text-gray-400" />
@@ -198,13 +199,13 @@ const CartPage = () => {
             </div>
           </div>
 
-          {/* Proceed Button */}
-          <div className="fixed bottom-4 right-4 left-4">
+          {/* Submit Button */}
+          <div className="mt-4">
             <button
               onClick={() => router.push("/details")}
               className="w-full bg-[#FC8019] text-white py-3 rounded-lg font-medium shadow-lg hover:bg-[#e67316] active:scale-95 transition-all"
             >
-              Proceed to Checkout
+              Proceed
             </button>
           </div>
         </div>

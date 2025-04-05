@@ -150,7 +150,7 @@ const DetailsPage = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="fixed bottom-4 right-4 left-4">
+            <div className="mt-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -160,7 +160,7 @@ const DetailsPage = () => {
                     : 'hover:bg-[#e67316] active:scale-95'
                 }`}
               >
-                {isSubmitting ? 'Submitting...' : 'Complete Order'}
+                {isSubmitting ? 'Submitting...' : 'Submit Order'}
               </button>
             </div>
           </form>

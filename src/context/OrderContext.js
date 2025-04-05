@@ -261,6 +261,7 @@ export const OrderProvider = ({ children }) => {
 
   const value = {
     products,
+    setProducts,
     cart,
     selectedCategory,
     searchQuery,

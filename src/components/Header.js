@@ -10,12 +10,12 @@ const Header = ({ showBackButton = false }) => {
   const { openMenu } = useMenu();
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 bg-white z-50 flex items-center justify-between px-4 border-b border-gray-100">
-      <div className="w-8 flex items-center">
+    <header className="fixed top-0 left-0 right-0 h-14 bg-white z-50 flex items-center justify-between px-4 border-b border-gray-100 !bg-opacity-100 !backdrop-blur-none !bg-white">
+      <div className="w-11 flex items-center">
         {showBackButton && (
           <button
             onClick={() => router.back()}
-            className="p-1.5 rounded-full hover:bg-gray-100 flex items-center justify-center"
+            className="w-11 h-11 rounded-full hover:bg-gray-100 flex items-center justify-center"
             aria-label="Go back"
           >
             <FiArrowLeft size={20} className="text-gray-800" />
@@ -23,13 +23,16 @@ const Header = ({ showBackButton = false }) => {
         )}
       </div>
       
-      <div className="absolute left-1/2 transform -translate-x-1/2">
+      <button 
+        onClick={() => router.push('/')}
+        className="absolute left-1/2 transform -translate-x-1/2 hover:text-gray-600 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center border border-gray-200 rounded-md px-3 hover:bg-gray-50 active:scale-95"
+      >
         ORA LIVING
-      </div>
+      </button>
 
       <button 
         onClick={openMenu}
-        className="p-1.5 rounded-full hover:bg-gray-100 flex items-center justify-center"
+        className="w-11 h-11 rounded-full hover:bg-gray-100 flex items-center justify-center"
         aria-label="Open menu"
       >
         <FiMenu size={20} className="text-gray-800" />
